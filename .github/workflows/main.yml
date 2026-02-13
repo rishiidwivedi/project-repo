@@ -15,9 +15,10 @@ jobs:
       ECR_REPOSITORY: myrepo
       IMAGE_TAG: latest
       ECR_REGISTRY: 983426484039.dkr.ecr.ap-south-1.amazonaws.com
+      EKS_CLUSTER_NAME: my-eks-cluster
 
     steps:
-      # 1️⃣ Checkout
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -28,7 +29,7 @@ jobs:
           chmod +x build.sh
           ./build.sh
 
-      # 3️⃣ Verify WAR (THIS FIXES YOUR ISSUE)
+      # 3️⃣ Verify WAR
       - name: Verify ROOT.war
         run: |
           echo "Current directory:"
@@ -45,7 +46,7 @@ jobs:
 
           echo "✅ ROOT.war found"
 
-      # 4️⃣ Login to ECR
+      # 4️⃣ Login to Amazon ECR
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region $AWS_REGION \
@@ -54,16 +55,21 @@ jobs:
       # 5️⃣ Build Docker Image
       - name: Build Docker image
         run: |
-          docker build -t \
-          $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
-      # 6️⃣ Push Image
+      # 6️⃣ Push Docker Image to ECR
       - name: Push Docker image to ECR
         run: |
-          docker push \
-          $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # 7️⃣ Deploy to Kubernetes
+      # 7️⃣ Configure kubectl for EKS
+      - name: Configure kubectl for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --region $AWS_REGION \
+            --name $EKS_CLUSTER_NAME
+
+      # 8️⃣ Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f deployment.yml

@@ -1,4 +1,4 @@
-name: Build WAR, Push to ECR and Deploy
+name: Build WAR, Push to ECR and Deploy 
 
 on:
   push:

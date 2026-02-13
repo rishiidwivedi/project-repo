@@ -1,0 +1,26 @@
+ROOT.war
+│
+├── index.jsp   (or any *.jsp)
+├── *.jsp
+│
+├── images/
+├── css/
+├── js/
+│
+└── WEB-INF/
+    ├── web.xml
+    ├── classes/
+    │   └── com/
+    │       └── snakes/
+    │           ├── model/
+    │           │   ├── Media.class
+    │           │   └── Movie.class
+    │           └── web/
+    │               ├── ListMovies.class
+    │               ├── AddMovie.class
+    │               └── SearchMovies.class
+    │
+    └── lib/
+        ├── servlet-api.jar
+        ├── jdbc.jar
+        └── other-dependencies.jar

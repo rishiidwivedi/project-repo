@@ -1,4 +1,4 @@
-name: Build WAR, Push to ECR and Deploy 
+name: Build WAR, Push to ECR and Deploy
 
 on:
   push:
@@ -11,37 +11,59 @@ jobs:
 
     env:
       AWS_REGION: ap-south-1
-      AWS_ACCOUNT_ID:  983426484039
+      AWS_ACCOUNT_ID: 983426484039
       ECR_REPOSITORY: myrepo
       IMAGE_TAG: latest
       ECR_REGISTRY: 983426484039.dkr.ecr.ap-south-1.amazonaws.com
 
     steps:
+      # 1️⃣ Checkout
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Build WAR
       - name: Build WAR using build.sh
         run: |
+          set -e
           chmod +x build.sh
           ./build.sh
 
+      # 3️⃣ Verify WAR (THIS FIXES YOUR ISSUE)
+      - name: Verify ROOT.war
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files in repo root:"
+          ls -l
+          echo "Searching for ROOT.war:"
+          find . -name "ROOT.war"
+
+          if [ ! -f ROOT.war ]; then
+            echo "❌ ROOT.war not found. Failing build."
+            exit 1
+          fi
+
+          echo "✅ ROOT.war found"
+
+      # 4️⃣ Login to ECR
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region $AWS_REGION \
           | docker login --username AWS --password-stdin $ECR_REGISTRY
 
-      - name: Build Docker image using Dockerfile
+      # 5️⃣ Build Docker Image
+      - name: Build Docker image
         run: |
-          chmod +x build.sh
-          ./build.sh
           docker build -t \
           $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 
+      # 6️⃣ Push Image
       - name: Push Docker image to ECR
         run: |
           docker push \
           $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
+      # 7️⃣ Deploy to Kubernetes
       - name: Deploy to Kubernetes
         run: |
           kubectl apply -f deployment.yml

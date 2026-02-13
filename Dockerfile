@@ -1,5 +1,12 @@
-from tomcat:8.0
-label "Owner"="TOMCAT"
-RUN cd /usr/local/tomcat/webapps && rm -rf *
-COPY ROOT.war /usr/local/tomcat/webapps
+FROM tomcat:8.0
+LABEL Owner="TOMCAT"
+
+RUN rm -rf /usr/local/tomcat/webapps/*
+
+COPY target/*.war /usr/local/tomcat/webapps/ROOT.war
 CMD ["catalina.sh", "run"]
+
+
+
+
+

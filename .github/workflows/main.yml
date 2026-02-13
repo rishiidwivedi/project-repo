@@ -62,15 +62,4 @@ jobs:
         run: |
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-      # 7️⃣ Configure kubectl for EKS
-      - name: Configure kubectl for EKS
-        run: |
-          aws eks update-kubeconfig \
-            --region $AWS_REGION \
-            --name $EKS_CLUSTER_NAME
-
-      # 8️⃣ Deploy to Kubernetes
-      - name: Deploy to Kubernetes
-        run: |
-          kubectl apply -f deployment.yml
-          kubectl apply -f svc.yml
+    

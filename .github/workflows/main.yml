@@ -32,6 +32,7 @@ jobs:
 
       - name: Build Docker image using Dockerfile
         run: |
+          ./build.sh
           docker build -t \
           $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
 

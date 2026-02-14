@@ -15,7 +15,7 @@ jobs:
       ECR_REPOSITORY: myrepo
       IMAGE_TAG: latest
       ECR_REGISTRY: 983426484039.dkr.ecr.ap-south-1.amazonaws.com
-      EKS_CLUSTER_NAME: my-eks-cluster
+      EKS_CLUSTER_NAME: demo-cluster
 
     steps:
       # 1️⃣ Checkout code
